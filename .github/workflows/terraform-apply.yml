@@ -6,6 +6,7 @@ on:
 jobs:
   apply:
     runs-on: ubuntu-latest
+
     defaults:
       run:
         working-directory: env/dev
@@ -20,7 +21,7 @@ jobs:
           terraform_version: 1.6.6
 
       - name: Azure Login
-        uses: azure/login@vv1
+        uses: azure/login@v1
         with:
           creds: |
             {
@@ -31,9 +32,19 @@ jobs:
             }
 
       - name: Terraform Init
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
+          ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         run: terraform init
 
       - name: Terraform Apply
+        env:
+          ARM_SUBSCRIPTION_ID: ${{ secrets.SUBSCRIPTION_ID }}
+          ARM_TENANT_ID: ${{ secrets.TENANT_ID }}
+          ARM_CLIENT_ID: ${{ secrets.CLIENT_ID }}
+          ARM_CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
         run: |
           terraform apply -auto-approve \
             -var "subscription_id=${{ secrets.SUBSCRIPTION_ID }}" \
