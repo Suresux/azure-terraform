@@ -1,4 +1,4 @@
-name: App CI/CD - Build, Push & Deploy
+name: App service - Build, Push & Deploy
 
 on:
   workflow_dispatch:
@@ -9,15 +9,9 @@ jobs:
     environment: dev
 
     steps:
-      # -----------------------------------------
-      # CHECKOUT CODE
-      # -----------------------------------------
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # -----------------------------------------
-      # LOGIN TO AZURE USING SPN
-      # -----------------------------------------
       - name: Azure Login
         uses: azure/login@v1
         with:
@@ -29,29 +23,17 @@ jobs:
               "tenantId": "${{ secrets.TENANT_ID }}"
             }
 
-      # -----------------------------------------
-      # LOGIN TO ACR
-      # -----------------------------------------
       - name: ACR Login
         run: az acr login --name ${{ secrets.ACR_LOGIN_SERVER }}
 
-      # -----------------------------------------
-      # BUILD DOCKER IMAGE FROM src/ FOLDER
-      # -----------------------------------------
       - name: Build Docker Image
         run: |
           docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/myapp:latest ./src
 
-      # -----------------------------------------
-      # PUSH IMAGE TO ACR
-      # -----------------------------------------
-      - name: Push Docker Image to ACR
+      - name: Push Docker Image
         run: |
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/myapp:latest
 
-      # -----------------------------------------
-      # DEPLOY NEW IMAGE TO APP SERVICE
-      # -----------------------------------------
       - name: Deploy Image to Azure App Service
         run: |
           az webapp config container set \
@@ -62,7 +44,6 @@ jobs:
             --docker-registry-server-user ${{ secrets.CLIENT_ID }} \
             --docker-registry-server-password ${{ secrets.CLIENT_SECRET }}
 
-      # OPTIONAL: Restart app for immediate new image load
       - name: Restart App Service
         run: |
           az webapp restart \
