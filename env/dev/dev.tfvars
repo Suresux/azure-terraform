@@ -1,9 +1,3 @@
-# SPN credentials will be injected from GitHub Actions. Leave as empty strings.
-subscription_id = ""
-tenant_id       = ""
-client_id       = ""
-client_secret   = ""
-
 resource_group_name   = "terraform-rg"
 app_service_plan_name = "appserviceplan-dev"
 app_service_name      = "webapp-dev"
